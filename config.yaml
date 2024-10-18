@@ -1,0 +1,12 @@
+server_port: "3001"
+rate_limit: "100-M"
+fixed_request_ip: ""
+max_request_body_size_mb: 50
+log_dir: "logs"
+log_name: "app.log"
+log_level: "info"
+path_map: {
+  "/openai/": "https://api.openai.com",
+  "/anthropic/": "https://api.anthropic.com",
+}
+

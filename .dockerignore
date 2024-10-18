@@ -1,0 +1,21 @@
+# Logs
+logs
+*.log
+
+# .github
+.github
+
+# build
+build
+
+# Temporary folders
+tmp
+temp
+
+# IDE and editor directories
+.idea
+.vscode
+
+# OS generated files
+.DS_Store
+Thumbs.db
