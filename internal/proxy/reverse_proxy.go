@@ -57,8 +57,8 @@ func NewOpenAIReverseProxy(cfg *config.Config) (*httputil.ReverseProxy, error) {
 		for header := range req.Header {
 			headerLower := strings.ToLower(header)
 			if !keepHeaderLower[headerLower] {
+				// 去除 Cf-Connecting-Ip、 Cf-Ipcountry 等cloudflare头信息
 				if strings.HasPrefix(headerLower, "cf-") ||
-					strings.HasPrefix(headerLower, "x-") ||
 					strings.EqualFold(headerLower, "cdn-loop") {
 					req.Header.Del(header)
 				}
@@ -67,13 +67,11 @@ func NewOpenAIReverseProxy(cfg *config.Config) (*httputil.ReverseProxy, error) {
 
 		// 设置请求头部
 		req.Header.Set("Host", remote.Host)
-		//req.Header.Set("Origin", remote.Scheme+"://"+remote.Host)
-		//req.Header.Set("referer", remote.Scheme+"://"+remote.Host)
 
 		if cfg.FixedRequestIP != "" {
 			// 设置本机物理机IP，防止暴露原客户端IP
 			req.Header.Set("X-Real-IP", cfg.FixedRequestIP)
-			//req.Header.Set("X-Forwarded-For", cfg.FixedRequestIP)
+			req.Header.Set("X-Forwarded-For", cfg.FixedRequestIP)
 		}
 
 		// 打印所有请求头部
