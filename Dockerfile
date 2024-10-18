@@ -30,10 +30,13 @@ COPY --from=builder /app/config.yaml .
 
 # 设置环境变量，指定默认配置文件路径
 ENV CONFIG_PATH=/app/config.yaml
+ENV PORT=3002
 
 # 复制入口脚本
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
+
+EXPOSE $PORT
 
 # 设置入口点
 ENTRYPOINT ["/app/entrypoint.sh"]

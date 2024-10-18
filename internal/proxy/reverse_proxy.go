@@ -4,6 +4,7 @@ import (
 	"ai-api-proxy/internal/config"
 	"ai-api-proxy/internal/middleware"
 	"ai-api-proxy/pkg/logger"
+	"fmt"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -107,7 +108,7 @@ func NewOpenAIReverseProxy(cfg *config.Config) (*httputil.ReverseProxy, error) {
 
 		// 处理错误
 		ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
-			middleware.ErrorHandler(w, "代理请求失败", http.StatusBadGateway)
+			middleware.ErrorHandler(w, fmt.Sprintf("代理请求失败: %v", err), http.StatusBadGateway)
 		},
 	}
 
