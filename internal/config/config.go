@@ -8,7 +8,6 @@ import (
 
 // Config config struct
 type Config struct {
-	ServerPort           string            `mapstructure:"server_port"`
 	RateLimit            string            `mapstructure:"rate_limit"`
 	MaxRequestBodySizeMB int               `mapstructure:"max_request_body_size_mb"`
 	FixedRequestIP       string            `mapstructure:"fixed_request_ip"`
@@ -24,7 +23,6 @@ func LoadConfig(configPath string) (*Config, error) {
 	viper.SetConfigFile(configPath)
 
 	// Set default values
-	viper.SetDefault("server_port", "3001")
 	viper.SetDefault("rate_limit", "100-M")
 	viper.SetDefault("max_request_body_size_mb", "100")
 	viper.SetDefault("log_dir", "logs")

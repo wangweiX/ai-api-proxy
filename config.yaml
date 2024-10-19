@@ -1,4 +1,3 @@
-server_port: "3002"
 rate_limit: "100-M"
 fixed_request_ip: ""
 max_request_body_size_mb: 100

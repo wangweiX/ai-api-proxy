@@ -16,8 +16,8 @@ func APIKeyAuthMiddleware() gin.HandlerFunc {
 			apiKey = c.GetHeader("x-api-key")
 		}
 		if apiKey == "" {
-			logger.Logger.Warn("未授权的访问请求")
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "未授权"})
+			logger.Logger.Error("Unauthorized access request")
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			return
 		}
 		c.Next()
@@ -48,8 +48,8 @@ func LimitRequestBody(maxBytes int64) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxBytes)
 		if err := c.Request.ParseForm(); err != nil {
-			logger.Logger.Warn("请求体过大")
-			c.AbortWithStatusJSON(http.StatusRequestEntityTooLarge, gin.H{"error": "请求体过大"})
+			logger.Logger.Error("Request body too large")
+			c.AbortWithStatusJSON(http.StatusRequestEntityTooLarge, gin.H{"error": "Request body too large"})
 			return
 		}
 		c.Next()

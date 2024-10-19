@@ -23,7 +23,9 @@ import (
 )
 
 func main() {
-	configPath := flag.String("config", "config.yaml", "配置文件路径")
+	configPath := flag.String("config", "config.yaml", "config file path")
+	serverPort := flag.Int("port", 3002, "server port")
+
 	flag.Parse()
 
 	// Load config
@@ -54,7 +56,7 @@ func main() {
 	router := gin.New()
 	// Add health check route
 	router.GET("/generate_204", func(c *gin.Context) {
-		logger.Logger.Debugln("generate_204 success.")
+		logger.Logger.Infoln("generate_204 success.")
 		c.Status(http.StatusNoContent)
 	})
 
@@ -84,7 +86,7 @@ func main() {
 
 	// Set up server
 	srv := &http.Server{
-		Addr:         ":" + cfg.ServerPort,
+		Addr:         fmt.Sprintf(":%d", *serverPort),
 		Handler:      router,
 		ReadTimeout:  90 * time.Second,
 		WriteTimeout: 90 * time.Second,
@@ -103,7 +105,7 @@ func main() {
 			logger.Logger.Fatalf("Failed to start server: %v", err)
 			errChan <- err
 		} else {
-			logger.Logger.Infof("Server started successfully: %s", cfg.ServerPort)
+			logger.Logger.Infof("Server started successfully: %d", *serverPort)
 		}
 	}()
 
