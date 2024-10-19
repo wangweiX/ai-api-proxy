@@ -16,7 +16,10 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o proxy ./cmd/proxy
 FROM alpine:latest
 
 # 安装证书
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates tzdata
+
+# 设置默认时区为上海
+ENV TZ=Asia/Shanghai
 
 # 设置工作目录
 WORKDIR /app
@@ -35,6 +38,9 @@ ENV PORT=3002
 # 复制入口脚本
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
+
+# 设置时区
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 EXPOSE $PORT
 

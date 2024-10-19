@@ -42,7 +42,10 @@ func InitLogger(config *config.Config) {
 
 	Logger = logrus.New()
 	Logger.SetOutput(fileAndStdoutWriter)
-	Logger.SetFormatter(&logrus.TextFormatter{})
+	Logger.SetFormatter(&logrus.TextFormatter{
+		TimestampFormat: "2006-01-02 15:04:05",
+		FullTimestamp:   true,
+	})
 	Logger.SetLevel(level)
 	Logger.SetReportCaller(true)
 
