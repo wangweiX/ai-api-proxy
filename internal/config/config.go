@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Config config struct
 type Config struct {
 	ServerPort           string            `mapstructure:"server_port"`
 	RateLimit            string            `mapstructure:"rate_limit"`
@@ -17,30 +18,30 @@ type Config struct {
 	PathMap              map[string]string `mapstructure:"path_map"`
 }
 
-// LoadConfig 配置加载
+// LoadConfig load config
 func LoadConfig(configPath string) (*Config, error) {
 	viper.SetConfigType("yaml")
 	viper.SetConfigFile(configPath)
 
-	// 设置默认值
+	// Set default values
 	viper.SetDefault("server_port", "3001")
 	viper.SetDefault("rate_limit", "100-M")
-	viper.SetDefault("max_request_body_size_mb", "20")
+	viper.SetDefault("max_request_body_size_mb", "100")
 	viper.SetDefault("log_dir", "logs")
 	viper.SetDefault("log_name", "app.log")
 	viper.SetDefault("log_level", "info")
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, fmt.Errorf("读取配置文件时发生错误: %v", err)
+		return nil, fmt.Errorf("read config file failed: %v", err)
 	}
 
 	var cfg Config
 	if err := viper.Unmarshal(&cfg); err != nil {
-		return nil, fmt.Errorf("无法解析配置: %v", err)
+		return nil, fmt.Errorf("unmarshal config failed: %v", err)
 	}
 
 	if len(cfg.PathMap) == 0 {
-		return nil, fmt.Errorf("路径映射配置为空")
+		return nil, fmt.Errorf("path map config is empty")
 	}
 
 	return &cfg, nil

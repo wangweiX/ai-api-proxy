@@ -11,25 +11,26 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
-	"go.uber.org/zap"
 )
 
-// 定义需要保留和删除的头部
+// keepHeaderLower keep some headers
 var keepHeaderLower = map[string]bool{
 	"x-api-key":     true,
 	"authorization": true,
 }
 
-// NewOpenAIReverseProxy 创建一个新的 OpenAI 代理
+// NewOpenAIReverseProxy create a new OpenAI reverse proxy
 func NewOpenAIReverseProxy(cfg *config.Config) (*httputil.ReverseProxy, error) {
 	director := func(req *http.Request) {
-		// 获取请求的路径前缀
+		startTime := time.Now()
+		logger.Logger.Infof("Start to handle request, method: %s, path: %s", req.Method, req.URL.Path)
+
+		// Get the target URL based on the request path
 		var targetURL string
 		for prefix, target := range cfg.PathMap {
 			if strings.HasPrefix(req.URL.Path, prefix) {
 				targetURL = target
-				// 移除路径前缀
+				// Remove the prefix from the request path
 				req.URL.Path = strings.TrimPrefix(req.URL.Path, prefix)
 				if !strings.HasPrefix(req.URL.Path, "/") {
 					req.URL.Path = "/" + req.URL.Path
@@ -39,7 +40,7 @@ func NewOpenAIReverseProxy(cfg *config.Config) (*httputil.ReverseProxy, error) {
 		}
 
 		if targetURL == "" {
-			logger.Logger.Warnf("未知的路径: %s", req.URL.Path)
+			logger.Logger.Warnf("Unknown path: %s", req.URL.Path)
 			return
 		}
 
@@ -52,13 +53,13 @@ func NewOpenAIReverseProxy(cfg *config.Config) (*httputil.ReverseProxy, error) {
 		req.URL.Host = remote.Host
 		req.Host = remote.Host
 
-		logger.Logger.Info("before request headers", zap.Any("headers", req.Header))
+		logger.Logger.Infof("Origin Request Headers, method: %s, path: %s, headers: %v", req.Method, req.URL.Path, req.Header)
 
-		// 保留必要的头部，删除其他不需要的头部
+		// Keep necessary headers, remove other unnecessary headers
 		for header := range req.Header {
 			headerLower := strings.ToLower(header)
 			if !keepHeaderLower[headerLower] {
-				// 去除 Cf-Connecting-Ip、 Cf-Ipcountry 等cloudflare头信息
+				// Remove Cf-Connecting-Ip、 Cf-Ipcountry 等cloudflare头信息
 				if strings.HasPrefix(headerLower, "cf-") ||
 					strings.EqualFold(headerLower, "cdn-loop") {
 					req.Header.Del(header)
@@ -66,39 +67,39 @@ func NewOpenAIReverseProxy(cfg *config.Config) (*httputil.ReverseProxy, error) {
 			}
 		}
 
-		// 设置请求头部
+		// Set the Host header
 		req.Header.Set("Host", remote.Host)
 
 		if cfg.FixedRequestIP != "" {
-			// 设置本机物理机IP，防止暴露原客户端IP
+			// Set the physical machine IP to prevent exposure of the original client IP
 			req.Header.Set("X-Real-IP", cfg.FixedRequestIP)
 			req.Header.Set("X-Forwarded-For", cfg.FixedRequestIP)
 		}
 
-		// 打印所有请求头部
-		logger.Logger.Info("after request headers", zap.Any("headers", req.Header))
+		// Print all request headers
+		logger.Logger.Infof("Request processing completed, method: %s, path: %s, new request headers: %v, duration: %s", req.Method, req.URL.Path, req.Header, time.Since(startTime))
 	}
 
-	// 创建 HTTP 传输层，设置超时和连接池
+	// Create HTTP transport layer, set timeout and connection pool
 	transport := &http.Transport{
-		// 设置支持WebSocket,自动处理升级请求
+		// Set support for WebSocket, automatically handle upgrade requests
 		Proxy: http.ProxyFromEnvironment,
 		DialContext: (&net.Dialer{
-			Timeout:   30 * time.Second,
-			KeepAlive: 30 * time.Second,
+			Timeout:   60 * time.Second,
+			KeepAlive: 60 * time.Second,
 		}).DialContext,
 		ForceAttemptHTTP2:   true,
 		MaxIdleConns:        100,
 		MaxConnsPerHost:     100,
 		MaxIdleConnsPerHost: 100,
-		IdleConnTimeout:     90 * time.Second,
-		TLSHandshakeTimeout: 10 * time.Second,
+		IdleConnTimeout:     120 * time.Second,
+		TLSHandshakeTimeout: 20 * time.Second,
 	}
 
 	proxy := &httputil.ReverseProxy{
 		Director:  director,
 		Transport: transport,
-		// 处理WebSocket协议
+		// Handle WebSocket protocol
 		ModifyResponse: func(res *http.Response) error {
 			if res.Header.Get("Upgrade") == "websocket" {
 				res.Header.Del("Content-Length")
@@ -106,9 +107,9 @@ func NewOpenAIReverseProxy(cfg *config.Config) (*httputil.ReverseProxy, error) {
 			return nil
 		},
 
-		// 处理错误
+		// Handle errors
 		ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
-			middleware.ErrorHandler(w, fmt.Sprintf("代理请求失败: %v", err), http.StatusBadGateway)
+			middleware.ErrorHandler(w, fmt.Sprintf("Proxy request failed: %v", err), http.StatusBadGateway)
 		},
 	}
 

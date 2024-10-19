@@ -1,48 +1,48 @@
-# 构建阶段
+# Build stage
 FROM golang:1.23.2-alpine AS builder
 
-# 设置工作目录
+# Set working directory
 WORKDIR /app
 
-# 复制 go.mod 和 go.sum 并下载依赖
+# Copy go.mod and go.sum and download dependencies
 COPY go.mod go.sum ./
 RUN go mod download
 
-# 复制源代码并构建
+# Copy source code and build
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o proxy ./cmd/proxy
 
-# 运行阶段
+# Run stage
 FROM alpine:latest
 
-# 安装证书
+# Install certificates
 RUN apk --no-cache add ca-certificates tzdata
 
-# 设置默认时区为上海
+# Set default timezone to Shanghai
 ENV TZ=Asia/Shanghai
 
-# 设置工作目录
+# Set working directory
 WORKDIR /app
 
-# 创建日志目录并设置权限
+# Create logs directory and set permissions
 RUN mkdir -p /app/logs && chmod 755 /app/logs
 
-# 复制可执行文件
+# Copy executable file
 COPY --from=builder /app/proxy .
 COPY --from=builder /app/config.yaml .
 
-# 设置环境变量，指定默认配置文件路径
+# Set environment variables, specify default config file path
 ENV CONFIG_PATH=/app/config.yaml
 ENV PORT=3002
 
-# 复制入口脚本
+# Copy entrypoint script
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-# 设置时区
+# Set timezone
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 EXPOSE $PORT
 
-# 设置入口点
+# Set entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]

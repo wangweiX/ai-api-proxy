@@ -8,7 +8,6 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
 	github.com/ulule/limiter/v3 v3.11.2
-	go.uber.org/zap v1.27.0
 )
 
 require (

@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// APIKeyAuthMiddleware 验证请求中的 API 密钥
+// APIKeyAuthMiddleware verify api key
 func APIKeyAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		apiKey := c.GetHeader("Authorization")
@@ -24,18 +24,18 @@ func APIKeyAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-// SecurityHeadersMiddleware 设置安全头
+// SecurityHeadersMiddleware set security headers
 func SecurityHeadersMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 防止 MIME 类型嗅探攻击。
+		// Prevent MIME type sniffing attacks.
 		c.Writer.Header().Set("X-Content-Type-Options", "nosniff")
-		// 防止点击劫持
+		// Prevent click jacking
 		c.Writer.Header().Set("X-Frame-Options", "DENY")
-		// 防止跨站脚本攻击
+		// Prevent cross-site scripting attacks
 		c.Writer.Header().Set("X-XSS-Protection", "1; mode=block")
-		// 实施内容安全策略（CSP），限制资源加载。
+		// Implement content security policy (CSP), limit resource loading.
 		c.Writer.Header().Set("Content-Security-Policy", "default-src 'none'")
-		// 防止浏览器缓存
+		// Prevent browser caching
 		c.Writer.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0")
 		c.Writer.Header().Set("Pragma", "no-cache")
 		c.Writer.Header().Set("Expires", "0")
@@ -43,7 +43,7 @@ func SecurityHeadersMiddleware() gin.HandlerFunc {
 	}
 }
 
-// LimitRequestBody 限制请求体大小
+// LimitRequestBody limit request body size
 func LimitRequestBody(maxBytes int64) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxBytes)
@@ -56,7 +56,7 @@ func LimitRequestBody(maxBytes int64) gin.HandlerFunc {
 	}
 }
 
-// ErrorHandler 统一的错误处理函数
+// ErrorHandler unified error handling function
 func ErrorHandler(w http.ResponseWriter, errMsg string, statusCode int) {
 	logger.Logger.Error(errMsg)
 	w.Header().Set("Content-Type", "application/json")
