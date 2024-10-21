@@ -4,7 +4,7 @@
 # Project related variables
 PROJECT_NAME := ai-api-proxy
 VERSION ?= v0.0.1
-DOCKER_USERNAME ?= wangwei01
+GITHUB_USERNAME ?= wangweix
 
 BASE_PATH := $(shell pwd)
 BUILD_PATH := $(BASE_PATH)/build
@@ -73,16 +73,15 @@ run: build
 # Build Docker image
 docker:
 	@echo "Build Docker image..."
-	@docker build -t $(PROJECT_NAME):$(VERSION) .
-	@echo "Add tag to docker image..."
-	@docker tag $(PROJECT_NAME):$(VERSION) $(DOCKER_USERNAME)/$(PROJECT_NAME):$(VERSION)
-	@docker tag $(PROJECT_NAME):$(VERSION) $(DOCKER_USERNAME)/$(PROJECT_NAME):latest
-	
+	@docker build . --file Dockerfile \
+		--tag ghcr.io/$(GITHUB_USERNAME)/$(PROJECT_NAME):latest \
+		--tag ghcr.io/$(GITHUB_USERNAME)/$(PROJECT_NAME):$(VERSION)
+
 # Push Docker image to registry
 docker-push: docker
-	@echo "Push Docker image to registry..."
-	@docker push $(DOCKER_USERNAME)/$(PROJECT_NAME):$(VERSION)
-	@docker push $(DOCKER_USERNAME)/$(PROJECT_NAME):latest
+	@echo "Push Docker image to GitHub Container Registry..."
+	@docker push ghcr.io/$(GITHUB_USERNAME)/$(PROJECT_NAME):latest
+	@docker push ghcr.io/$(GITHUB_USERNAME)/$(PROJECT_NAME):$(VERSION)
 
 # Display help information
 help:
@@ -97,8 +96,4 @@ help:
 	@echo "  run         - Run program"
 	@echo "  docker      - Build Docker image"
 	@echo "  docker-push - Push Docker image to registry"
-	@echo "  docker-run  - Run Docker container with external configuration file"
 	@echo "  help        - Display help information"
-
-
-	

@@ -114,7 +114,6 @@ func main() {
 		logger.Logger.Info("Received shutdown signal, shutting down server...")
 	case err := <-errChan:
 		logger.Logger.Errorf("Server error: %v", err)
-		quit <- syscall.SIGINT
 	}
 
 	// Graceful shutdown
@@ -123,5 +122,5 @@ func main() {
 	if err := srv.Shutdown(ctx); err != nil {
 		logger.Logger.Fatalf("Server shutdown failed: %v", err)
 	}
-	logger.Logger.Info("Server shutdown")
+	logger.Logger.Info("Server shutdown successfully")
 }
