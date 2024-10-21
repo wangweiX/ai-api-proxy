@@ -51,6 +51,11 @@ jobs:
       - name: Format code
         run: make fmt
 
+      - name: install golangci-lint
+        run: |
+          GO111MODULE=on go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
+          echo "$HOME/go/bin" >> $GITHUB_PATH
+
       - name: Run static code analysis
         run: make lint
 
