@@ -17,7 +17,7 @@ GOCMD := $(GO)
 GOBUILD := $(GOCMD) build
 GOCLEAN := $(GOCMD) clean
 GOTEST := $(GOCMD) test
-GOFMT := $(GOCMD) fmt
+GOFMT := $(GOCMD)fmt
 GOLINT := golangci-lint
 GO_MOD_TIDY := $(GOCMD) mod tidy
 
@@ -48,7 +48,7 @@ clean:
 # Format code
 fmt:
 	@echo "Format code..."
-	@$(GOFMT) -s -w ./...
+	@find . -type f -name '*.go' -exec $(GOFMT) -s -w {} +
 
 # Run tests
 test:

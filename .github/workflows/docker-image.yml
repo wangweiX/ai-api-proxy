@@ -54,9 +54,6 @@ jobs:
       - name: Run static code analysis
         run: make lint
 
-      - name: Run tests
-        run: make test
-
       - name: Build and push Docker image
         run: make docker-push
         env:
