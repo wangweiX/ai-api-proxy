@@ -60,13 +60,7 @@ jobs:
         run: make lint
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ghcr.io/${{ format('{0}', github.repository_owner) }}/ai-api-proxy:latest
-            ghcr.io/${{ format('{0}', github.repository_owner) }}/ai-api-proxy:${{ github.sha }}
-          labels: |
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
+        run: make docker-push
+        env:
+          VERSION: ${{ github.sha }}
+          GITHUB_USERNAME: ${{ github.actor }}
