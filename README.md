@@ -23,7 +23,6 @@
   - [贡献指南](#贡献指南)
 - [部署与运维](#部署与运维)
   - [持续集成/持续部署 (CI/CD)](#持续集成持续部署-cicd)
-  - [容器化与编排](#容器化与编排)
 - [安全性](#安全性)
 - [常见问题](#常见问题)
 - [许可证](#许可证)
@@ -310,60 +309,6 @@ ai-api-proxy/
 - **推送镜像**：将构建好的镜像推送到 Docker Hub 或其他镜像仓库。
 
 你可以在 `.github/workflows/docker-image.yml` 中查看和自定义 CI/CD 配置。
-
-### 容器化与编排
-
-项目提供了 `Dockerfile` 以支持容器化部署。你可以使用 Docker Compose 或 Kubernetes 进行容器编排，进一步提升系统的可伸缩性和可靠性。
-
-**示例 Kubernetes 部署配置：**
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ai-api-proxy
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: ai-api-proxy
-  template:
-    metadata:
-      labels:
-        app: ai-api-proxy
-    spec:
-      containers:
-      - name: ai-api-proxy
-        image: your-docker-username/ai-api-proxy:latest
-        ports:
-        - containerPort: 3001
-        volumeMounts:
-        - name: config
-          mountPath: /app/config.yaml
-          subPath: config.yaml
-        - name: logs
-          mountPath: /app/logs
-      volumes:
-      - name: config
-        configMap:
-          name: ai-api-proxy-config
-      - name: logs
-        persistentVolumeClaim:
-          claimName: ai-api-proxy-logs
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ai-api-proxy-service
-spec:
-  type: LoadBalancer
-  selector:
-    app: ai-api-proxy
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 3001
-```
 
 ## 安全性
 
