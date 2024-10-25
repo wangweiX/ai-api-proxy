@@ -65,8 +65,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/ai-api-proxy:latest
-            ghcr.io/${{ github.repository_owner }}/ai-api-proxy:${{ github.sha }}
+            ghcr.io/${{ format('{0}', github.repository_owner) }}/ai-api-proxy:latest
+            ghcr.io/${{ format('{0}', github.repository_owner) }}/ai-api-proxy:${{ github.sha }}
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
