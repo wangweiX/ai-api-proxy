@@ -53,7 +53,7 @@ jobs:
 
       - name: install golangci-lint
         run: |
-          GO111MODULE=on go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
+          GO111MODULE=on go install github.com/golangci/golangci-lint/cmd/golangci-lint@v2.4.0
           echo "$HOME/go/bin" >> $GITHUB_PATH
 
       - name: Run static code analysis

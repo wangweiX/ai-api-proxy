@@ -28,6 +28,13 @@ func main() {
 
 	flag.Parse()
 
+	// Ensure logger is closed on exit
+	defer func() {
+		if err := logger.CloseLogger(); err != nil {
+			log.Printf("Failed to close logger: %v", err)
+		}
+	}()
+
 	// Load config
 	cfg, err := config.LoadConfig(*configPath)
 	if err != nil {
@@ -101,11 +108,10 @@ func main() {
 
 	// Start server
 	go func() {
+		logger.Logger.Infof("Starting server on port %d", *serverPort)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Logger.Fatalf("Failed to start server: %v", err)
+			logger.Logger.Errorf("Failed to start server: %v", err)
 			errChan <- err
-		} else {
-			logger.Logger.Infof("Server started successfully: %d", *serverPort)
 		}
 	}()
 

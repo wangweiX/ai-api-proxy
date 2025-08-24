@@ -47,11 +47,6 @@ func SecurityHeadersMiddleware() gin.HandlerFunc {
 func LimitRequestBody(maxBytes int64) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxBytes)
-		if err := c.Request.ParseForm(); err != nil {
-			logger.Logger.Error("Request body too large")
-			c.AbortWithStatusJSON(http.StatusRequestEntityTooLarge, gin.H{"error": "Request body too large"})
-			return
-		}
 		c.Next()
 	}
 }

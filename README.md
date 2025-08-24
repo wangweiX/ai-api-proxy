@@ -42,7 +42,7 @@
 
 ## 技术栈
 
-- **编程语言**：Go 1.23.2
+- **编程语言**：Go 1.25.0
 - **Web 框架**：Go 标准库 `net/http`，Gin
 - **限流库**：[ulule/limiter](https://github.com/ulule/limiter)
 - **日志库**：Logrus
@@ -55,7 +55,7 @@
 ### 前置条件
 
 - [Docker](https://www.docker.com/get-started)（如果选择使用 Docker 部署）
-- [Go 1.23.2](https://golang.org/dl/)（如果选择源码运行）
+- [Go 1.25.0](https://golang.org/dl/)（如果选择源码运行）
 - Git
 
 ### 使用 Docker 部署
@@ -222,7 +222,7 @@ ai-api-proxy/
 
 1. **安装 Go**
 
-   下载并安装 Go 1.23.2 或更高版本。参考 [Go 官方安装指南](https://golang.org/doc/install)。
+   下载并安装 Go 1.25.0 或更高版本。参考 [Go 官方安装指南](https://golang.org/doc/install)。
 
 2. **克隆仓库**
 
