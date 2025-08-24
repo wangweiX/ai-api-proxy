@@ -142,5 +142,5 @@ build
 logs
 *.log
 .cursorrules
-
+CLAUDE.md
 # End of https://www.toptal.com/developers/gitignore/api/go,goland
